@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mysqlrs1
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      env: dev
+  template:
+    metadata:
+      name: mysqlpod1
+      labels:
+        env: dev
+    spec:
+      containers:
+      - name: "mysqlcon1"
+        image: "mysql:5.6"
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+              secretKeyRef: 
+               name: mysqlsecret 
+               key: rpass
+        - name: MYSQL_DATABASE
+          value: mylwdb
+        - name: MYSQL_USER
+          valueFrom:
+              secretKeyRef: 
+               name: mysqlsecret 
+               key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+              secretKeyRef: 
+               name: mysqlsecret 
+               key: vpass
+        volumeMounts:
+         - name: web-vol1
+           mountPath:  /var/lib/mysql
+      volumes:
+       - name: web-vol1 
+         persistentVolumeClaim: 
+           claimName: mysqlpvc1
+
+
+
+
+
